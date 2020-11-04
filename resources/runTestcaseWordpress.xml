@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="Suite" parallel="false">
+
+	<parameter name="url" value="https://automationfc.wordpress.com/wp-admin/" />
+	<listeners>
+		<listener class-name="commons.MethodListener" />
+		<listener class-name="reportConfig.ExtentTestListener" />
+	</listeners>
+	
+	<test name="Run on CHROME UI">
+		<parameter name="browser" value="chrome_ui" />
+		<classes>
+			<class name="com.wordpress.admin.Posts" />
+		</classes>
+	</test>
+</suite>
