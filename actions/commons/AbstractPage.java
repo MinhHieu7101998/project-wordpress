@@ -18,6 +18,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -32,6 +33,7 @@ import ru.yandex.qatools.ashot.Screenshot;
 import ru.yandex.qatools.ashot.comparison.ImageDiff;
 import ru.yandex.qatools.ashot.comparison.ImageDiffer;
 import userPageObject.HomeUserPageObject;
+import userPageObject.PostDetailsUserPageObject;
 import userPageObject.SearchResultUserPageObject;
 
 public class AbstractPage {
@@ -331,10 +333,24 @@ public class AbstractPage {
 		}
 	}
 
+	protected void checkToCheckboxByJS(WebDriver driver, String locator) {
+		element = getElement(driver, locator);
+		if (!element.isSelected()) {
+			clickToElementByJS(driver, locator);
+		}
+	}
+
 	protected void unCheckToCheckbox(WebDriver driver, String locator) {
 		element = getElement(driver, locator);
 		if (element.isSelected()) {
 			element.click();
+		}
+	}
+
+	protected void unCheckToCheckboxByJS(WebDriver driver, String locator) {
+		element = getElement(driver, locator);
+		if (element.isSelected()) {
+			clickToElementByJS(driver, locator);
 		}
 	}
 
@@ -419,6 +435,12 @@ public class AbstractPage {
 		action.moveToElement(getElement(driver, locator)).perform();
 	}
 
+	protected void hoverMouseToElment(WebDriver driver, String locator, String... dynamicValues) {
+		locator = castRestParamter(locator, dynamicValues);
+		action = new Actions(driver);
+		action.moveToElement(getElement(driver, locator)).perform();
+	}
+
 	protected void clickAndHoldToElement(WebDriver driver, String locator) {
 		action = new Actions(driver);
 		action.clickAndHold(getElement(driver, locator)).perform();
@@ -450,6 +472,11 @@ public class AbstractPage {
 		jsExecutor.executeScript("window.scrollBy(0,document.body.scrollHeight)");
 	}
 
+	protected void scrollToTopPage(WebDriver driver) {
+		jsExecutor = (JavascriptExecutor) driver;
+		jsExecutor.executeScript("window.scrollTo(0,0);");
+	}
+
 	protected void navigateToUrlByJS(WebDriver driver, String url) {
 		jsExecutor = (JavascriptExecutor) driver;
 		jsExecutor.executeScript("window.location = '" + url + "'");
@@ -471,6 +498,13 @@ public class AbstractPage {
 		jsExecutor.executeScript("arguments[0].click();", element);
 	}
 
+	protected void clickToElementByJS(WebDriver driver, String locator, String... dynamicValues) {
+		locator = castRestParamter(locator, dynamicValues);
+		jsExecutor = (JavascriptExecutor) driver;
+		element = getElement(driver, locator);
+		jsExecutor.executeScript("arguments[0].click();", element);
+	}
+
 	protected void scrollToElement(WebDriver driver, String locator) {
 		jsExecutor = (JavascriptExecutor) driver;
 		element = getElement(driver, locator);
@@ -485,6 +519,13 @@ public class AbstractPage {
 	}
 
 	protected void sendkeyToElementByJS(WebDriver driver, String locator, String value) {
+		jsExecutor = (JavascriptExecutor) driver;
+		element = getElement(driver, locator);
+		jsExecutor.executeScript("arguments[0].setAttribute('value', '" + value + "')", element);
+	}
+
+	protected void sendkeyToElementByJS(WebDriver driver, String locator, String value, String... dynamicValues) {
+		locator = castRestParamter(locator, dynamicValues);
 		jsExecutor = (JavascriptExecutor) driver;
 		element = getElement(driver, locator);
 		jsExecutor.executeScript("arguments[0].setAttribute('value', '" + value + "')", element);
@@ -806,6 +847,38 @@ public class AbstractPage {
 		return isElementDisplayed(driver, PostsAdminPageUI.DYNAMIC_ROW_VALUE_AT_COLUMN_NAME, colname, value);
 	}
 
+	public boolean isImagePostDisplayedByTitle(WebDriver driver, String newTitle, String newImage) {
+		newImage = newImage.split("\\.")[0];
+		waitForJStoLoad(driver);
+		waitToElementVisible(driver, AbstractPageUI.DYNAMIC_IMAGE_BY_TITLE, newTitle, newImage);
+		return isElementDisplayed(driver, AbstractPageUI.DYNAMIC_IMAGE_BY_TITLE, newTitle, newImage);
+	}
+
+	public PostDetailsUserPageObject clickToTitleLink(WebDriver driver, String newTitle) {
+		waitToElementClickable(driver, AbstractPageUI.DYNAMIC_TITLE_LINK_BY_TITLE_NAME, newTitle);
+		clickToElement(driver, AbstractPageUI.DYNAMIC_TITLE_LINK_BY_TITLE_NAME, newTitle);
+		return PageGeneratorManager.getPostDetailsUserPage(driver);
+	}
+
+	public boolean isPostUndisplayedOnLatestPost(WebDriver driver, String editTitle, String editCategoryName, String today) {
+		return isElementUndisplayed(driver, AbstractPageUI.DYNAMIC_POSTS_LATEST_BY_TITLE_CATEGORY_AND_TODAY, editTitle, editCategoryName, today);
+	}
+
+	public boolean isImagePostUndisplayedByTitle(WebDriver driver, String editTitle, String newImage) {
+		newImage = newImage.split("\\.")[0];
+		return isElementUndisplayed(driver, AbstractPageUI.DYNAMIC_IMAGE_BY_TITLE, editTitle, newImage);
+	}
+
+	public SearchResultUserPageObject inputToSearchTextboxAtEndUserPage(WebDriver driver, String newTitle) {
+		waitToElementClickable(driver, AbstractPageUI.SEARCH_ICON_HEADER_PAGE);
+		clickToElement(driver, AbstractPageUI.SEARCH_ICON_HEADER_PAGE);
+		waitToElementVisible(driver, AbstractPageUI.SEARCH_TEXTBOX);
+		sendkeyToELement(driver, AbstractPageUI.SEARCH_TEXTBOX, newTitle);
+		waitToElementClickable(driver, AbstractPageUI.SEARCH_ICON_IN_SEARCH_TEXTBOX);
+		clickToElement(driver, AbstractPageUI.SEARCH_ICON_IN_SEARCH_TEXTBOX);
+		return PageGeneratorManager.getSearchResultUserPage(driver);
+	}
+
 	public boolean compareImageAshot(WebDriver driver, String locator, String fileName) throws IOException {
 
 		element = getElement(driver, locator);
@@ -824,6 +897,31 @@ public class AbstractPage {
 			return true;
 		}
 
+	}
+
+	public boolean waitForJStoLoad(WebDriver driver) {
+		explicitWait = new WebDriverWait(driver, GlobalConstants.LONG_TIMEOUT);
+		jsExecutor = (JavascriptExecutor) driver;
+
+		// wait for jQuery to load
+		ExpectedCondition<Boolean> jQueryLoad = new ExpectedCondition<Boolean>() {
+			@Override
+			public Boolean apply(WebDriver driver) {
+				try {
+					return ((Long) jsExecutor.executeScript("return jQuery.active") == 0);
+				} catch (Exception e) {
+					return true;
+				}
+			}
+		};
+		ExpectedCondition<Boolean> jsLoad = new ExpectedCondition<Boolean>() {
+			@Override
+			public Boolean apply(WebDriver driver) {
+				return jsExecutor.executeScript("return document.readyState").toString().equals("complete");
+			}
+		};
+
+		return explicitWait.until(jQueryLoad) && explicitWait.until(jsLoad);
 	}
 
 	public void captureImage(WebDriver driver, String locator) throws IOException {

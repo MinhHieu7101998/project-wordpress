@@ -21,4 +21,9 @@ public class AbstractPageUI {
 	public static final String ALL_POSTS_LINK = "//li[@class='wp-first-item current']//a[text()='All Posts']";
 	public static final String DYNAMIC_POSTS_LATEST_BY_TITLE_CATEGORY_AND_TODAY = "//a[text()='%s']/parent::h2//preceding-sibling::p[@class='post-categories']//a[text()='%s']/parent::p//following-sibling::p[@class='post-meta']//a[text()='%s']";
 	public static final String DYNAMIC_IMAGE_THUMBNAIL_SELECTED = "//a[@id='set-post-thumbnail']//img[contains(@src,'%s')]";
+	public static final String DYNAMIC_IMAGE_BY_TITLE = "//a[@title='%s']//img[@data-image-title = '%s']";
+	public static final String DYNAMIC_TITLE_LINK_BY_TITLE_NAME = "//h2[@class='post-title']//a[text()='%s']";
+	public static final String SEARCH_ICON_HEADER_PAGE = "//a[@class='search-toggle']";
+	public static final String SEARCH_TEXTBOX  = "//input[@class='search-field']";
+	public static final String SEARCH_ICON_IN_SEARCH_TEXTBOX = "//span[@class='fa fw fa-search']";
 }

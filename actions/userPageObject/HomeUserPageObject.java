@@ -10,4 +10,5 @@ public class HomeUserPageObject extends AbstractPage {
 	public HomeUserPageObject(WebDriver driver) {
 		this.driver = driver;
 	}
+
 }

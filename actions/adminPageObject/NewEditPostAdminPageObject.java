@@ -12,9 +12,19 @@ public class NewEditPostAdminPageObject extends AbstractPage {
 		this.driver = driver;
 	}
 
-	public void clickToPublishButton() {
-		waitToElementClickable(driver, NewEditPostAdminPageUI.PUBLISH_BUTTON);
-		clickToElementByJS(driver, NewEditPostAdminPageUI.PUBLISH_BUTTON);
+	public void clickToPublishOrUpdateButton() {
+		waitToElementClickable(driver, NewEditPostAdminPageUI.PUBLISH_OR_UPDATE_BUTTON);
+		clickToElementByJS(driver, NewEditPostAdminPageUI.PUBLISH_OR_UPDATE_BUTTON);
+	}
+
+	public void removeOldTags(String newTag) {
+		waitToElementClickable(driver, NewEditPostAdminPageUI.REMOVE_TAGS_ICON, newTag);
+		clickToElementByJS(driver, NewEditPostAdminPageUI.REMOVE_TAGS_ICON, newTag);
+	}
+
+	public void unClickToCheckboxByCategoryName(String newCategoryName) {
+		waitToElementClickable(driver, NewEditPostAdminPageUI.UNCHECK_CATEGORY, newCategoryName);
+		clickToElementByJS(driver, NewEditPostAdminPageUI.UNCHECK_CATEGORY, newCategoryName);
 	}
 
 }
